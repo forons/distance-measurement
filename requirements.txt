@@ -1,0 +1,4 @@
+findspark
+logging
+pyspark
+scipy

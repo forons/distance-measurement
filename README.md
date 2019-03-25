@@ -1,15 +1,18 @@
-# FitnessForUse-Distance
+# Distance Measurement
 
-This project provides to the user the chance to measure the distance between two datasets.
+This project allows the user to measure the distance between two different datasets,
+according to multiple distance metrics.
 
 The user has to specify:
 - the input of the path to the first dataset
 - the input of the path to the second dataset
-- the characteristics of the datasets (header, quote representation, null representation)
+
+Moreover, she can define:
+- the characteristics of the input dataset (header, quote representation, null representation)
 - the columns that will be considered trough the measurement
 
 Help
 ----
-This project is developed and maintaned by the dbTrento group of the University of Trento, and in particular by Daniele Foroni.
+This project is developed and maintained by the dbTrento group of the University of Trento, specifically by Daniele Foroni (@forons).
 For any question or doubt you can easily mail him at the address:
 `daniele dot foroni at unitn dot it`
