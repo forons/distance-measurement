@@ -56,16 +56,8 @@ object Main {
         collectTime = calculator.collectTime
         totalTime = System.currentTimeMillis() - start
 
-        var distance = 0.0
-        var i = 0
-        while (i < matching.length) {
-          distance += matching(i).distance
-          i += 1
-        }
-        if (matching.length < calculator.dim) {
-          distance += calculator.dim - matching.length
-        }
-        distance / calculator.dim
+        val distance = calculator.computeDistance(matching)
+        distance
       } catch {
         case e: NullPointerException =>
           log.error("The computation of the distance lead to an error")

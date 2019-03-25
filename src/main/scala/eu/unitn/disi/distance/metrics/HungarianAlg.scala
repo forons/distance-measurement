@@ -52,7 +52,7 @@ class HungarianAlg(spark: SparkSession,
     timeToCollect = System.currentTimeMillis() - start
 
     log.info(s"Collected distances in ${timeToCollect}ms")
-
+H
     distancesMap = fromListToMap(distancesList)
     updatedDistances = mutable.Map(distancesMap.toSeq: _*)
 

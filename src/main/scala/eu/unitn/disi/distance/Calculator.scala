@@ -7,12 +7,35 @@ import org.slf4j.{Logger, LoggerFactory}
 
 class Calculator(spark: SparkSession) {
 
-  val log: Logger = LoggerFactory.getLogger(classOf[Calculator])
+  private val log: Logger = LoggerFactory.getLogger(classOf[Calculator])
 
-  val SIZE_SHINGLES: Int = 3
-  val SIMILARITY_THRESHOLD: Double = 1.0
-  var dim: Int = _
+  private val SIZE_SHINGLES: Int = 3
+  private val SIMILARITY_THRESHOLD: Double = 1.0
+  private var dim: Int = _
   var collectTime: Long = _
+
+  def computeDistance(fst: Dataset[Row],
+                      snd: Dataset[Row],
+                      distanceTypes: DistanceTypes,
+                      cols: Array[Int],
+                      metric: MetricType): Double = {
+    val distances = computeDistances(fst, snd, distanceTypes, cols)
+    val matching = computeMatching(distances, metric)
+    computeDistance(matching)
+  }
+
+  def computeDistance(matching: Array[DistanceWrapper]): Double = {
+    var distance = 0.0
+    var i = 0
+    while (i < matching.length) {
+      distance += matching(i).distance
+      i += 1
+    }
+    if (matching.length < dim) {
+      distance += dim - matching.length
+    }
+    distance / dim
+  }
 
   def computeDistances(dfFst: Dataset[Row],
                        dfSnd: Dataset[Row],
@@ -38,16 +61,14 @@ class Calculator(spark: SparkSession) {
     val sizeSnd = snd.count
     dim = Math.max(sizeFst, sizeSnd).toInt
 
-    val start = System.currentTimeMillis()
-
     val distances: Dataset[DistanceWrapper] =
       DistanceComputer.computeDistances(spark,
-                                        dfFst = dfFst,
-                                        dfSnd = dfSnd,
-                                        distanceTypes = distanceTypes,
-                                        cols = cols,
-                                        sizeShingles = SIZE_SHINGLES,
-                                        threshold = SIMILARITY_THRESHOLD)
+        dfFst = dfFst,
+        dfSnd = dfSnd,
+        distanceTypes = distanceTypes,
+        cols = cols,
+        sizeShingles = SIZE_SHINGLES,
+        threshold = SIMILARITY_THRESHOLD)
 
     distances
   }
@@ -56,11 +77,11 @@ class Calculator(spark: SparkSession) {
                       metric: MetricType): Array[DistanceWrapper] = {
 
     val algorithm: IAlg = metric match {
-      case MetricType.GREEDY      => new GreedyAlg(spark, distances, dim)
+      case MetricType.GREEDY => new GreedyAlg(spark, distances, dim)
       case MetricType.APPROXIMATE => ???
-      case MetricType.AUCTION     => new AuctionAlg(spark, distances, dim)
-      case MetricType.HUNGARIAN   => new HungarianAlg(spark, distances, dim)
-      case _                      => ???
+      case MetricType.AUCTION => new AuctionAlg(spark, distances, dim)
+      case MetricType.HUNGARIAN => new HungarianAlg(spark, distances, dim)
+      case _ => ???
     }
     val matching = algorithm.computeMatching()
     collectTime = algorithm.timeToCollect

@@ -53,7 +53,8 @@ object DistanceComputer {
 
     import spark.implicits._
 
-    if (distanceTypes.values.length == 1 && distanceTypes.matches.length == 1) {
+    if (distanceTypes.values != null && distanceTypes.matches != null &&
+        distanceTypes.values.length == 1 && distanceTypes.matches.length == 1) {
       val valuesFst =
         fst
           .groupBy(col(fstColumns(distanceTypes.matches(0))))
@@ -90,7 +91,9 @@ object DistanceComputer {
     val joined = fst.crossJoin(snd).repartition(3000)
 
     val distancesFull: Dataset[Row] =
-      if (distanceTypes.differences.length + distanceTypes.values.length + distanceTypes.shingles.length + distanceTypes.matches.length == 2) {
+      if (distanceTypes.values != null && distanceTypes.matches != null &&
+          distanceTypes.differences != null &&
+          distanceTypes.differences.length + distanceTypes.values.length + distanceTypes.shingles.length + distanceTypes.matches.length == 2) {
         if (distanceTypes.values.length == 2) {
           joined.withColumn(
             "distance",
@@ -162,7 +165,7 @@ object DistanceComputer {
           )
         } else {
           joined
-        }
+        }.
       } else {
         joined.transform(transformElems(columns, distanceTypes, sizeShingles))
       }
