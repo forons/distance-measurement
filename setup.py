@@ -14,7 +14,7 @@ REQUIRES_PYTHON = '>=3.6.0'
 VERSION = '0.0.1'
 
 REQUIRED = [
-    'findspark', 'logging', 'pyspark>=2.2.0'
+    'findspark', 'pyspark>=2.2.0'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))

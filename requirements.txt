@@ -1,4 +1,2 @@
-findspark
-logging
 pyspark
 scipy
